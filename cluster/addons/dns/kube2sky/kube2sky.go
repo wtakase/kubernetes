@@ -305,7 +305,7 @@ func (ks *kube2sky) generateRecordsForPortalService(subdomain string, service *k
 		}
 	}
         // Generate PTR Record
-        if err := ks.generatePTRRecord(service.Spec.ClusterIP, strings.TrimSuffix(recordKey, ".")); err != nil {
+        if err := ks.generatePTRRecord(service.Spec.ClusterIP, strings.TrimSuffix(subdomain, ".")); err != nil {
                 return err
         }
 	return nil
