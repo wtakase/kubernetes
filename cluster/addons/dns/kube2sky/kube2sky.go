@@ -304,6 +304,10 @@ func (ks *kube2sky) generateRecordsForPortalService(subdomain string, service *k
 			}
 		}
 	}
+        // Generate PTR Record
+        if err := ks.generatePTRRecord(service.Spec.ClusterIP, strings.TrimSuffix(recordKey, ".")); err != nil {
+                return err
+        }
 	return nil
 }
 
@@ -335,6 +339,19 @@ func (ks *kube2sky) generateSRVRecord(subdomain, portSegment, recordName, cName 
 		return err
 	}
 	return nil
+}
+
+func (ks *kube2sky) generatePTRRecord(ip string, hostname string) error {
+        sliced_ip := strings.Split(ip, ".")
+        recordKey := buildDNSNameString(sliced_ip...) + ".in-addr.arpa."
+        ptr_rec, err := json.Marshal(getSkyMsg(hostname, 0))
+        if err != nil {
+                return err
+        }
+        if err := ks.writeSkyRecord(recordKey, string(ptr_rec)); err != nil {
+                return err
+        }
+        return nil
 }
 
 func (ks *kube2sky) addDNS(subdomain string, service *kapi.Service) error {
