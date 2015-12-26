@@ -230,8 +230,8 @@ func (ks *kube2sky) handleEndpointAdd(obj interface{}) {
 func (ks *kube2sky) handlePodCreate(obj interface{}) {
 	if e, ok := obj.(*kapi.Pod); ok {
 		// If the pod ip is not yet available, do not attempt to create.
-		if e.Status.PodIP != "" {
-			name := buildDNSNameString(ks.domain, podSubdomain, e.Namespace, santizeIP(e.Status.PodIP))
+		if e.Status.PodName != "" {
+			name := buildDNSNameString(ks.domain, podSubdomain, e.Namespace, e.Status.PodName)
 			ks.mutateEtcdOrDie(func() error { return ks.generateRecordsForPod(name, e) })
 		}
 	}
@@ -256,8 +256,8 @@ func (ks *kube2sky) handlePodUpdate(old interface{}, new interface{}) {
 
 func (ks *kube2sky) handlePodDelete(obj interface{}) {
 	if e, ok := obj.(*kapi.Pod); ok {
-		if e.Status.PodIP != "" {
-			name := buildDNSNameString(ks.domain, podSubdomain, e.Namespace, santizeIP(e.Status.PodIP))
+		if e.Status.PodName != "" {
+			name := buildDNSNameString(ks.domain, podSubdomain, e.Namespace, e.Status.PodName)
 			ks.mutateEtcdOrDie(func() error { return ks.removeDNS(name) })
 		}
 	}
@@ -276,7 +276,10 @@ func (ks *kube2sky) generateRecordsForPod(subdomain string, service *kapi.Pod) e
 	if err := ks.writeSkyRecord(recordKey, recordValue); err != nil {
 		return err
 	}
-
+        // Generate PTR Record
+        if err := ks.generatePTRRecord(service.Status.PodIP, strings.TrimSuffix(subdomain, ".")); err != nil {
+                return err
+        }
 	return nil
 }
 
