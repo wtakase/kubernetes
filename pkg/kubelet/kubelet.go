@@ -1482,7 +1482,9 @@ func (kl *Kubelet) getClusterDNS(pod *api.Pod) ([]string, []string, error) {
 	if kl.clusterDomain != "" {
 		nsSvcDomain := fmt.Sprintf("%s.svc.%s", pod.Namespace, kl.clusterDomain)
 		svcDomain := fmt.Sprintf("svc.%s", kl.clusterDomain)
-		dnsSearch = append([]string{nsSvcDomain, svcDomain, kl.clusterDomain}, hostSearch...)
+		nsPodDomain := fmt.Sprintf("%s.pod.%s", pod.Namespace, kl.clusterDomain)
+		podDomain := fmt.Sprintf("pod.%s", kl.clusterDomain)
+		dnsSearch = append([]string{nsSvcDomain, svcDomain, kl.clusterDomain, nsPodDomain, podDomain}, hostSearch...)
 	} else {
 		dnsSearch = hostSearch
 	}
