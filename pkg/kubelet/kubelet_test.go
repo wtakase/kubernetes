@@ -1024,7 +1024,7 @@ func TestDNSConfigurationParams(t *testing.T) {
 	} else if options[0].DNS[0] != clusterNS {
 		t.Errorf("expected nameserver %s, got %v", clusterNS, options[0].DNS[0])
 	}
-	if len(options[0].DNSSearch) != len(options[1].DNSSearch)+3 {
+	if len(options[0].DNSSearch) != len(options[1].DNSSearch)+5 {
 		t.Errorf("expected prepend of cluster domain, got %+v", options[0].DNSSearch)
 	} else if options[0].DNSSearch[0] != ".svc."+kubelet.clusterDomain {
 		t.Errorf("expected domain %s, got %s", ".svc."+kubelet.clusterDomain, options[0].DNSSearch)
