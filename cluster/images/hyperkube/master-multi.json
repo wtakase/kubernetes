@@ -27,7 +27,6 @@
               "--address=0.0.0.0",
               "--etcd-servers=http://127.0.0.1:4001",
               "--cluster-name=kubernetes",
-              "--admission-control=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota",
               "--v=2"
         ]
     },
